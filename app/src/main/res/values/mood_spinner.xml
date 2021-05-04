@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="mood_array">
+        <item>very low</item>
+        <item>low</item>
+        <item>average</item>
+        <item>good</item>
+        <item>very good</item>
+    </string-array>
+</resources>
