@@ -105,7 +105,6 @@ public class EntryFragment extends Fragment {
                     if (p == null){
                         binding.editButton.post(() -> {
                             binding.editButton.setEnabled(false);
-                            binding.textViewSave.setText("record has been inserted");
 
                         });
                         binding.saveButton.post(() -> binding.saveButton.setOnClickListener(v -> {
