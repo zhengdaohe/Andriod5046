@@ -1,5 +1,8 @@
 package com.example.personalisedmobilepaindiary.room;
 
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Embedded;
@@ -12,6 +15,13 @@ public class PainRecord {
         @ColumnInfo(name = "temperature")
         @NonNull
         public double temperature;
+
+        public Weather(double temperature, double humidity, double pressure) {
+            this.temperature = temperature;
+            this.humidity = humidity;
+            this.pressure = pressure;
+        }
+
         @ColumnInfo(name = "humidity")
         @NonNull
         public double humidity;
@@ -23,16 +33,13 @@ public class PainRecord {
     public int rid;
     @ColumnInfo(name = "pain_intensity_level")
     @NonNull
-    public String painIntensityLevel;
+    public int painIntensityLevel;
     @ColumnInfo(name = "pain_location")
     @NonNull
     public String painLocation;
     @ColumnInfo(name = "mood")
     @NonNull
     public String mood;
-    @ColumnInfo(name = "step_goal")
-    @NonNull
-    public int stepGoal;
     @ColumnInfo(name = "step_taken")
     @NonNull
     public int stepTaken;
@@ -45,14 +52,12 @@ public class PainRecord {
     @Embedded
     public Weather weather;
 
-    public PainRecord(int rid, @NonNull String painIntensityLevel, @NonNull String painLocation,
-                      @NonNull String mood, int stepGoal, int stepTaken, @NonNull String date,
+    public PainRecord(@NonNull int painIntensityLevel, @NonNull String painLocation,
+                      @NonNull String mood, int stepTaken, @NonNull String date,
                       @NonNull String userEmail, Weather weather) {
-        this.rid = rid;
         this.painIntensityLevel = painIntensityLevel;
         this.painLocation = painLocation;
         this.mood = mood;
-        this.stepGoal = stepGoal;
         this.stepTaken = stepTaken;
         this.date = date;
         this.userEmail = userEmail;

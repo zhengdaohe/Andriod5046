@@ -1,7 +1,10 @@
 package com.example.personalisedmobilepaindiary;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.ArraySet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,6 +55,7 @@ public class HomeFragment extends Fragment {
 
                   @Override
                   public void onResponse(Call<WeatherModel> call, Response<WeatherModel> response) {
+                      requireActivity().runOnUiThread(() -> {
                       if (response.isSuccessful()) {
                           Geocoder geocoder = new Geocoder(requireActivity());
                           try {
@@ -81,12 +85,21 @@ public class HomeFragment extends Fragment {
                           pressure += "kPa";
                           binding.pressure.setText("pressure: " + pressure);
                       }
+                          SharedPreferences weather = requireActivity().getSharedPreferences("WEATHER_PREFERENCE", Context.MODE_PRIVATE);
+                          SharedPreferences.Editor wtEditor = weather.edit();
+                          wtEditor.putInt("temperature", response.body().data.current_condition.get(0).temp_C);
+                          wtEditor.putInt("humidity", response.body().data.current_condition.get(0).humidity);
+                          wtEditor.putInt("pressure", response.body().data.current_condition.get(0).pressure);
+                          wtEditor.apply();
+                  });
+
                   }
 
                   @Override
                   public void onFailure(Call<WeatherModel> call, Throwable t) {
-                      Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_SHORT);
-                  }
+                      requireActivity().runOnUiThread(() -> {
+                          binding.location.setText("Cannot connect to weather server!");
+                  });}
               });
         });
         return view;

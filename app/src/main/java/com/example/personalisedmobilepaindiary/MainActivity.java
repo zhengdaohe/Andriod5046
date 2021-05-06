@@ -14,6 +14,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -79,6 +80,12 @@ public class MainActivity extends AppCompatActivity {
             NavigationUI.setupWithNavController(binding.navView, navController);
             NavigationUI.setupWithNavController(binding.toolbar, navController,
                     appBarConfiguration);
+            if (getSharedPreferences("STEP_GOAL_PREFERENCE", Context.MODE_PRIVATE).getInt("goal",-1) == -1){
+                SharedPreferences dailyStepGoal = getSharedPreferences("STEP_GOAL_PREFERENCE", Context.MODE_PRIVATE);
+                SharedPreferences.Editor stEditor = dailyStepGoal.edit();
+                stEditor.putInt("goal", 10000);
+                stEditor.apply();
+            }
             if (ActivityCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                     ActivityCompat.checkSelfPermission(this,
@@ -86,7 +93,6 @@ public class MainActivity extends AppCompatActivity {
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
                         Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
             }
-
         }
 
     }

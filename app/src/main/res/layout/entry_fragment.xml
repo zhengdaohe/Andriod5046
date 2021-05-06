@@ -80,7 +80,6 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:paddingLeft="5dp" />
-
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
@@ -91,7 +90,7 @@
         android:id="@+id/step_goal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter your step goal today">
+        android:hint="Your step goal is ">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/step_goal_input"
@@ -104,13 +103,14 @@
         android:id="@+id/step_taken"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter your step goal today">
+        android:hint="Enter your steps taken today">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/step_taken_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#FFFFFF"
+            android:text= "0"
             android:inputType="number" />
     </com.google.android.material.textfield.TextInputLayout>
     <Button
