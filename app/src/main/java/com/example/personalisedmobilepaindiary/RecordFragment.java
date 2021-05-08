@@ -25,12 +25,15 @@ public class RecordFragment extends Fragment {
         DatabaseViewModel datebaseViewModel =
                 ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication()).create(DatabaseViewModel.class);
         datebaseViewModel.getAllRecords().observe(getViewLifecycleOwner(), v -> {
-            PainRecordRCAdapter adapter = new PainRecordRCAdapter(v);
-            binding.recordList.addItemDecoration(new
-                    DividerItemDecoration(requireContext(),LinearLayoutManager.VERTICAL));
-            binding.recordList.setAdapter(adapter);
-            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(requireContext());
-            binding.recordList.setLayoutManager(layoutManager);
+            if (this.isAdded()){
+                PainRecordRCAdapter adapter = new PainRecordRCAdapter(v);
+                binding.recordList.addItemDecoration(new
+                        DividerItemDecoration(requireContext(),LinearLayoutManager.VERTICAL));
+                binding.recordList.setAdapter(adapter);
+                RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(requireContext());
+                binding.recordList.setLayoutManager(layoutManager);
+            }
+
         });
         return view;
     }

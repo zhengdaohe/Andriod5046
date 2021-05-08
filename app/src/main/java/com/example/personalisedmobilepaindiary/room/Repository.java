@@ -53,6 +53,7 @@ public class Repository {
             }
         });
     }
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     public CompletableFuture<PainRecord> findByDate(String date) {
         return CompletableFuture.supplyAsync(new Supplier<PainRecord>() {
@@ -60,5 +61,24 @@ public class Repository {
             public PainRecord get() {
                 return recordDao.getRecordByDate(date);
             }
-        }, PainRecordDatabase.databaseExecutor); }
+        }, PainRecordDatabase.databaseExecutor);
+    }
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public CompletableFuture<List<PainRecord>> getAllByList() {
+        return CompletableFuture.supplyAsync(new Supplier<List<PainRecord>>() {
+            @Override
+            public List<PainRecord> get() {
+                return recordDao.getAllRecordsByList();
+            }
+        }, PainRecordDatabase.databaseExecutor);
+    }
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public CompletableFuture<List<LocationFrequencyModel>> getLocationFrequency() {
+        return CompletableFuture.supplyAsync(new Supplier<List<LocationFrequencyModel>>() {
+            @Override
+            public List<LocationFrequencyModel> get() {
+                return recordDao.getLocationFrequency();
+            }
+        }, PainRecordDatabase.databaseExecutor);
+    }
 }

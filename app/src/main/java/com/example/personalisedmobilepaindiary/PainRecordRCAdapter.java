@@ -28,6 +28,7 @@ public class PainRecordRCAdapter extends RecyclerView.Adapter<PainRecordRCAdapte
     @Override
     public void onBindViewHolder(@NonNull PainRecordRCAdapter.ViewHolder holder, int position) {
         PainRecord painRecord = painRecords.get(position);
+        holder.binding.rcId.setText(position + 1 + "");
         holder.binding.rcDate.setText(painRecord.date);
         holder.binding.rcIntensity.setText(""+painRecord.painIntensityLevel);
         holder.binding.rcLocation.setText(painRecord.painLocation);
@@ -46,7 +47,6 @@ public class PainRecordRCAdapter extends RecyclerView.Adapter<PainRecordRCAdapte
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private RecyclerItemBinding binding;
-
         public ViewHolder(RecyclerItemBinding binding) {
             super(binding.getRoot());
             this.binding = binding;

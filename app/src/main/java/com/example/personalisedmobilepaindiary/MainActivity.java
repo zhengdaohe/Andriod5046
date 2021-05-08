@@ -12,6 +12,9 @@ import androidx.navigation.ui.NavigationUI;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,6 +22,8 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import com.example.personalisedmobilepaindiary.databinding.ActivityMainBinding;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -26,11 +31,12 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.Calendar;
+
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private FirebaseAuth auth;
     private AppBarConfiguration appBarConfiguration;
-    private LocationViewModel model;
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
@@ -56,10 +62,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         auth = FirebaseAuth.getInstance();
-        model = new ViewModelProvider(this).get(LocationViewModel.class);
         if (auth.getCurrentUser() == null) {
+            Intent oldIntent = getIntent();
+            if (oldIntent != null){
+                if (oldIntent.getIntExtra("alarm", 0) == 1){
+                    oldIntent.setClass(MainActivity.this, SigninupActivity.class);
+                    startActivity(oldIntent);
+                }
+            }
             Intent intent = new Intent(MainActivity.this, SigninupActivity.class);
-            intent.putExtra("message", "This is a message from the First Activity");
             startActivity(intent);
         } else {
             binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -80,6 +91,13 @@ public class MainActivity extends AppCompatActivity {
             NavigationUI.setupWithNavController(binding.navView, navController);
             NavigationUI.setupWithNavController(binding.toolbar, navController,
                     appBarConfiguration);
+            Intent oldIntent = getIntent();
+            if (oldIntent != null){
+                if (oldIntent.getIntExtra("alarm", 0) == 1){
+                    Toast toast = Toast.makeText(this,"Please remember to record your daily pain!!", Toast.LENGTH_LONG);
+                    toast.show();
+                }
+            }
             if (getSharedPreferences("STEP_GOAL_PREFERENCE", Context.MODE_PRIVATE).getInt("goal",-1) == -1){
                 SharedPreferences dailyStepGoal = getSharedPreferences("STEP_GOAL_PREFERENCE", Context.MODE_PRIVATE);
                 SharedPreferences.Editor stEditor = dailyStepGoal.edit();
@@ -93,8 +111,44 @@ public class MainActivity extends AppCompatActivity {
                 requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
                         Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
             }
+            SharedPreferences alarmParam = getSharedPreferences("ALARM_PARAM", Context.MODE_PRIVATE);
+            if (alarmParam.getInt("hour", -1) != -1){
+                Intent intent = new Intent(this,MainActivity.class);
+                intent.putExtra("alarm",1);
+                AlarmManager alarmManager = (AlarmManager) getSystemService(Service.ALARM_SERVICE);
+                PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTimeInMillis(System.currentTimeMillis());
+                calendar.set(Calendar.HOUR_OF_DAY, alarmParam.getInt("hour", -1));
+                calendar.set(Calendar.MINUTE, alarmParam.getInt("minute", -1));
+                calendar.set(Calendar.SECOND,1);
+                if (alarmParam.getInt("hour", -1) > Calendar.getInstance().get(Calendar.HOUR_OF_DAY) &&
+                        alarmParam.getInt("minute", -1) > Calendar.getInstance().get(Calendar.MINUTE)){
+                    alarmManager.setExact(AlarmManager.RTC, calendar.getTimeInMillis(), pendingIntent);
+                }
+                else {
+                    alarmManager.setExact(AlarmManager.RTC, calendar.getTimeInMillis() + 86400000, pendingIntent);
+                }
+            }
+            else {
+                SharedPreferences.Editor wtEditor = alarmParam.edit();
+                wtEditor.putInt("hour", 16);
+                wtEditor.putInt("minute", 0);
+                wtEditor.apply();
+                recreate();
+            }
         }
 
     }
+    public void clearSoftKeyboard(){
+        InputMethodManager keyboard = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (keyboard.isActive()) {
+            if(keyboard.isActive()&&getCurrentFocus()!=null){
+                if (getCurrentFocus().getWindowToken()!=null) {
+                    keyboard.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                }
+            }
 
+        }
+    }
 }

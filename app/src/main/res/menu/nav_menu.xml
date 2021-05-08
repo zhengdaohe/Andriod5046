@@ -9,9 +9,9 @@
         android:id="@+id/entryFragment"
         android:title="Pain Data Entry" />
     <item
-        android:id="@+id/reportFragment"
+        android:id="@+id/recordFragment"
         android:title="Daily Record" />
     <item
-        android:id="@+id/recordFragment"
+        android:id="@+id/reportFragment"
         android:title="Reports and Maps" />
 </menu>

@@ -1,7 +1,9 @@
 package com.example.personalisedmobilepaindiary;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -21,6 +23,13 @@ public class SigninupActivity extends AppCompatActivity {
         binding = ActivitySigninupBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
+        Intent oldIntent = getIntent();
+        if (oldIntent != null){
+            if (oldIntent.getIntExtra("alarm", 0) == 1){
+                Toast toast = Toast.makeText(this,"Please remember to record your daily pain!!", Toast.LENGTH_LONG);
+                toast.show();
+            }
+        }
         replaceFragment(new SigninFragment());
     }
     public void replaceFragment(Fragment nextFragment) {

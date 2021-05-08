@@ -4,12 +4,9 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.ArraySet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -55,43 +52,46 @@ public class HomeFragment extends Fragment {
 
                   @Override
                   public void onResponse(Call<WeatherModel> call, Response<WeatherModel> response) {
-                      requireActivity().runOnUiThread(() -> {
-                      if (response.isSuccessful()) {
-                          Geocoder geocoder = new Geocoder(requireActivity());
-                          try {
-                              List<Address> addresses = geocoder.getFromLocation(Double.parseDouble(v.split(",")[0]) ,
-                                      Double.parseDouble(v.split(",")[1]), 1);
-                              String addressValue = "";
-                              if (addresses.size() > 0) {
-                                  Address address = addresses.get(0);
-                                  binding.location.setText("location: " + address.getLocality() + ", " + address.getAdminArea() + ", " + address.getCountryName());
-                                  for (int i = 0; i < address.getMaxAddressLineIndex(); i++){
-                                      if (i < 2)
-                                          addressValue = addressValue + address.getAddressLine(i) + ", ";
+                      if (isAdded()){
+                          requireActivity().runOnUiThread(() -> {
+                              if (response.isSuccessful()) {
+                                  Geocoder geocoder = new Geocoder(requireActivity());
+                                  try {
+                                      List<Address> addresses = geocoder.getFromLocation(Double.parseDouble(v.split(",")[0]) ,
+                                              Double.parseDouble(v.split(",")[1]), 1);
+                                      String addressValue = "";
+                                      if (addresses.size() > 0) {
+                                          Address address = addresses.get(0);
+                                          binding.location.setText("location: " + addresses.get(0).getAddressLine(0));
+                                          for (int i = 0; i < address.getMaxAddressLineIndex(); i++){
+                                              if (i < 2)
+                                                  addressValue = addressValue + address.getAddressLine(i) + ", ";
+                                          }
+                                      }
                                   }
+                                  catch (Exception E){
+
+                                  }
+                                  binding.temperature.setText("temperature: " + response.body().data.current_condition.get(0).temp_C + "℃");
+                                  binding.humidity.setText("humidity: " + response.body().data.current_condition.get(0).humidity + "%");
+                                  String pressure = "";
+                                  for (int i = 0; i < String.valueOf(response.body().data.current_condition.get(0).pressure).length(); i++){
+                                      pressure += String.valueOf(response.body().data.current_condition.get(0).pressure).charAt(i);
+                                      if (i == 2)
+                                          pressure += ".";
+                                  }
+                                  pressure += "kPa";
+                                  binding.pressure.setText("pressure: " + pressure);
                               }
-                          }
-                          catch (Exception E){
-                              binding.location.setText(v);
-                          }
-                          binding.temperature.setText("temperature: " + response.body().data.current_condition.get(0).temp_C + "℃");
-                          binding.humidity.setText("humidity: " + response.body().data.current_condition.get(0).humidity + "%");
-                          String pressure = "";
-                          for (int i = 0; i < String.valueOf(response.body().data.current_condition.get(0).pressure).length(); i++){
-                              pressure += String.valueOf(response.body().data.current_condition.get(0).pressure).charAt(i);
-                              if (i == 2)
-                                  pressure += ".";
-                          }
-                          pressure += "kPa";
-                          binding.pressure.setText("pressure: " + pressure);
+                              SharedPreferences weather = requireActivity().getSharedPreferences("WEATHER_PREFERENCE", Context.MODE_PRIVATE);
+                              SharedPreferences.Editor wtEditor = weather.edit();
+                              wtEditor.putInt("temperature", response.body().data.current_condition.get(0).temp_C);
+                              wtEditor.putInt("humidity", response.body().data.current_condition.get(0).humidity);
+                              wtEditor.putInt("pressure", response.body().data.current_condition.get(0).pressure);
+                              wtEditor.apply();
+                          });
                       }
-                          SharedPreferences weather = requireActivity().getSharedPreferences("WEATHER_PREFERENCE", Context.MODE_PRIVATE);
-                          SharedPreferences.Editor wtEditor = weather.edit();
-                          wtEditor.putInt("temperature", response.body().data.current_condition.get(0).temp_C);
-                          wtEditor.putInt("humidity", response.body().data.current_condition.get(0).humidity);
-                          wtEditor.putInt("pressure", response.body().data.current_condition.get(0).pressure);
-                          wtEditor.apply();
-                  });
+
 
                   }
 

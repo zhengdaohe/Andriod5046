@@ -24,6 +24,10 @@ public class DatabaseViewModel extends AndroidViewModel{
     public void insert(PainRecord painRecord) {
         repository.insert(painRecord);
     }
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public CompletableFuture<List<PainRecord>> getAllBylist() {
+        return repository.getAllByList();
+    }
     public void update(PainRecord painRecord) {
         repository.update(painRecord);
     }
@@ -36,5 +40,9 @@ public class DatabaseViewModel extends AndroidViewModel{
     @RequiresApi(api = Build.VERSION_CODES.N)
     public CompletableFuture<PainRecord> findRecordByDate(String date) {
         return repository.findByDate(date);
+    }
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public CompletableFuture<List<LocationFrequencyModel>> getLocationFrequency(){
+        return repository.getLocationFrequency();
     }
 }

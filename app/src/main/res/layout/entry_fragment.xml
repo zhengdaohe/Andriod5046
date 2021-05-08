@@ -7,6 +7,43 @@
     android:orientation="vertical">
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/step_goal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Your step goal is ">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/step_goal_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:inputType="number" />
+    </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/alarm_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Configure Alarm Time (Current time: )(optional)">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/alarm_date_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:inputType="date" />
+    </com.google.android.material.textfield.TextInputLayout>
+    <TextView
+        android:id="@+id/textView_config"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+    <Button
+        android:id="@+id/config_Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="configure" />
+
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/pain_intensity_level"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -87,19 +124,6 @@
             android:background="?android:attr/listDivider" />
     </com.google.android.material.textfield.TextInputLayout>
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/step_goal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Your step goal is ">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/step_goal_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#FFFFFF"
-            android:inputType="number" />
-    </com.google.android.material.textfield.TextInputLayout>
-    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/step_taken"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -113,6 +137,7 @@
             android:text= "0"
             android:inputType="number" />
     </com.google.android.material.textfield.TextInputLayout>
+
     <Button
         android:id="@+id/saveButton"
         android:layout_width="match_parent"

@@ -13,26 +13,20 @@ import androidx.room.PrimaryKey;
 public class PainRecord {
     public static class Weather{
         @ColumnInfo(name = "temperature")
-        @NonNull
         public double temperature;
-
+        @ColumnInfo(name = "humidity")
+        public double humidity;
+        @ColumnInfo(name = "pressure")
+        public double pressure;
         public Weather(double temperature, double humidity, double pressure) {
             this.temperature = temperature;
             this.humidity = humidity;
             this.pressure = pressure;
         }
-
-        @ColumnInfo(name = "humidity")
-        @NonNull
-        public double humidity;
-        @ColumnInfo(name = "pressure")
-        @NonNull
-        public double pressure;
     }
     @PrimaryKey(autoGenerate = true)
     public int rid;
     @ColumnInfo(name = "pain_intensity_level")
-    @NonNull
     public int painIntensityLevel;
     @ColumnInfo(name = "pain_location")
     @NonNull
@@ -41,7 +35,6 @@ public class PainRecord {
     @NonNull
     public String mood;
     @ColumnInfo(name = "step_taken")
-    @NonNull
     public int stepTaken;
     @ColumnInfo(name = "date")
     @NonNull
@@ -52,7 +45,7 @@ public class PainRecord {
     @Embedded
     public Weather weather;
 
-    public PainRecord(@NonNull int painIntensityLevel, @NonNull String painLocation,
+    public PainRecord(int painIntensityLevel, @NonNull String painLocation,
                       @NonNull String mood, int stepTaken, @NonNull String date,
                       @NonNull String userEmail, Weather weather) {
         this.painIntensityLevel = painIntensityLevel;
