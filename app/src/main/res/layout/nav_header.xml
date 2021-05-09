@@ -13,9 +13,10 @@
         android:layout_height="wrap_content"
         app:srcCompat="@mipmap/ic_launcher_round" />
     <TextView
+        android:id="@+id/greeting"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Navigation Destinations"
+        android:text="Navigation"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Body1" />
     <TextView
         android:id="@+id/textView"

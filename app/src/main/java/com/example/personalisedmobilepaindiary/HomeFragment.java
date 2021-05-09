@@ -17,6 +17,8 @@ import com.example.personalisedmobilepaindiary.weather.WeatherClient;
 import com.example.personalisedmobilepaindiary.weather.WeatherModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.firebase.auth.FirebaseAuth;
+
 import android.location.Address;
 import android.location.Geocoder;
 
@@ -35,6 +37,10 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         binding = HomeFragmentBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
+        binding.signoutButton.setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
+            getActivity().recreate();
+        });
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
         LocationViewModel model = new
                 ViewModelProvider(requireActivity()).get(LocationViewModel.class);
@@ -45,6 +51,7 @@ public class HomeFragment extends Fragment {
                         model.setLocation("-37.9,145.126");
                     }
                 });
+
         model.getLocation().observe(getViewLifecycleOwner(), v -> {
               WeatherApi weatherApi = WeatherClient.getWeatherService();
               Call<WeatherModel> callAsync = weatherApi.getWeatherByLocation(v,"today", "json","45aa79be0da34cef9dd182050210105");

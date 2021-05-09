@@ -53,4 +53,14 @@
         android:textSize="24sp"
         tools:layout_editor_absoluteX="-34dp"
         tools:layout_editor_absoluteY="145dp" />
+
+    <Button
+        android:id="@+id/signoutButton"
+        android:layout_width="136dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="sign out"
+        android:textAlignment="center"
+        android:textColorLink="#6A2626"
+        android:textSize="16sp" />
 </LinearLayout>

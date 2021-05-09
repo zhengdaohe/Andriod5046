@@ -1,6 +1,7 @@
 package com.example.personalisedmobilepaindiary;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentManager;
@@ -9,6 +10,12 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import androidx.work.Configuration;
+import androidx.work.Data;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -20,20 +27,36 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.ArrayMap;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.example.personalisedmobilepaindiary.databinding.ActivityMainBinding;
+import com.example.personalisedmobilepaindiary.firebasedatabase.MyWorker;
+import com.example.personalisedmobilepaindiary.room.DatabaseViewModel;
+import com.example.personalisedmobilepaindiary.room.PainRecord;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
+import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
+    public static MainActivity currentInstance = null;
     private ActivityMainBinding binding;
     private FirebaseAuth auth;
     private AppBarConfiguration appBarConfiguration;
@@ -58,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, SigninupActivity.class);
             startActivity(intent);
         } else {
+            MainActivity.currentInstance = this;
             binding = ActivityMainBinding.inflate(getLayoutInflater());
             View view = binding.getRoot();
             setContentView(view);
@@ -91,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
             NavigationUI.setupWithNavController(binding.navView, navController);
             NavigationUI.setupWithNavController(binding.toolbar, navController,
                     appBarConfiguration);
+            Toast.makeText(this,"Login Successfully!", Toast.LENGTH_LONG).show();
             Intent oldIntent = getIntent();
             if (oldIntent != null){
                 if (oldIntent.getIntExtra("alarm", 0) == 1){
@@ -137,6 +163,14 @@ public class MainActivity extends AppCompatActivity {
                 wtEditor.apply();
                 recreate();
             }
+            Thread thread=new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    pushToFirebase();
+                }
+            });
+
+            thread.start();
         }
 
     }
@@ -151,4 +185,39 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void pushToFirebase(){
+        long delay = 0;
+        Calendar startTime = Calendar.getInstance();
+        startTime.set(Calendar.HOUR_OF_DAY, 3);
+        startTime.set(Calendar.MINUTE, 0);
+        if (Calendar.getInstance().getTimeInMillis() > startTime.getTimeInMillis()){
+            delay = startTime.getTimeInMillis() + 86400000  - Calendar.getInstance().getTimeInMillis();
+        }
+        else {
+            delay = startTime.getTimeInMillis() - Calendar.getInstance().getTimeInMillis();
+        }
+        Log.e("a", "delay: " + delay);
+        long finalDelay = delay;
+//        if (WorkManager.getInstance(this).enqueue(new OneTimeWorkRequest.Builder(MyWorker.class).setInitialDelay(Duration.ofMillis(finalDelay)).build()).getResult().isDone()){
+//            Log.e("a", "single queued");
+//        }
+//        else {
+//            Log.e("a", "single failed queue or exist ");
+//        }
+        PeriodicWorkRequest saveRequest =
+                new PeriodicWorkRequest.Builder(MyWorker.class, 1, TimeUnit.DAYS).setInitialDelay(Duration.ofMillis(finalDelay))
+                        .build();
+        Log.e("a", "builded");
+        if (WorkManager.getInstance(MainActivity.this).enqueueUniquePeriodicWork(
+                "databasePush",
+                ExistingPeriodicWorkPolicy.REPLACE,
+                saveRequest).getResult().isDone()){
+            Log.e("a", "queued");
+        }
+        else {
+            Log.e("a", "failed queue or exist ");
+        }
+    }
+
 }

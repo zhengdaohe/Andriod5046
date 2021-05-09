@@ -174,6 +174,7 @@ public class EntryFragment extends Fragment {
                                             getActivity().getSharedPreferences("WEATHER_PREFERENCE",
                                                     Context.MODE_PRIVATE).getInt("pressure", -1)));
                             datebaseViewModel.insert(record);
+                            ((MainActivity)requireActivity()).clearSoftKeyboard();
                             saveNotification = "Great! your record has been added.";
 
                             ((NavHostFragment) requireActivity().getSupportFragmentManager().findFragmentById(R.id.nav_host)).getNavController().navigate(R.id.entryFragment);
@@ -203,6 +204,7 @@ public class EntryFragment extends Fragment {
                                     p.stepTaken = Integer.parseInt(binding.stepTakenInput.getText().toString());
                                     datebaseViewModel.update(p);
                                     saveNotification = "Great! your modification has been saved.";
+                                    ((MainActivity)requireActivity()).clearSoftKeyboard();
                                     ((NavHostFragment) requireActivity().getSupportFragmentManager().findFragmentById(R.id.nav_host)).getNavController().navigate(R.id.entryFragment);
                                 });
                             });
