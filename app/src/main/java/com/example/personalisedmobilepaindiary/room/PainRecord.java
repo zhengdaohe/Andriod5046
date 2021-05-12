@@ -18,6 +18,7 @@ public class PainRecord {
         public double humidity;
         @ColumnInfo(name = "pressure")
         public double pressure;
+
         public Weather(double temperature, double humidity, double pressure) {
             this.temperature = temperature;
             this.humidity = humidity;

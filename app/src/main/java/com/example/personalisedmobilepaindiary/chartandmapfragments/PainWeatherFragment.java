@@ -29,6 +29,7 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.firebase.auth.FirebaseAuth;
 
 import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
@@ -82,7 +83,7 @@ public class PainWeatherFragment extends Fragment {
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                         binding.endDateInput.setText(dayOfMonth + "/" + (month + 1) + "/" + year);
                     }
-                }, 2021, 4, 23);//后边三个参数为显示dialog时默认的日期，月份从0开始，0-11对应1-12个月
+                }, 2021, 4, 23);
                 dialog.show();
             }
         });
@@ -91,9 +92,9 @@ public class PainWeatherFragment extends Fragment {
             DatePickerDialog dialog=new DatePickerDialog(requireActivity(), 0,new DatePickerDialog.OnDateSetListener(){
                 @Override
                 public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                    binding.startDateInput.setText(dayOfMonth + "/" + (month + 1) + "/" + year);
+                    binding.endDateInput.setText(dayOfMonth + "/" + (month + 1) + "/" + year);
                 }
-            },calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH));//后边三个参数为显示dialog时默认的日期，月份从0开始，0-11对应1-12个月
+            },calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH));
             dialog.show();
 
         });
@@ -107,7 +108,7 @@ public class PainWeatherFragment extends Fragment {
         DatabaseViewModel datebaseViewModel =
                 ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication()).create(DatabaseViewModel.class);
         binding.loadGraphBtm.setOnClickListener(v -> {
-            CompletableFuture<List<PainRecord>> painRecordList = datebaseViewModel.getAllBylist();
+            CompletableFuture<List<PainRecord>> painRecordList = datebaseViewModel.getAllBylistAndUser(FirebaseAuth.getInstance().getCurrentUser().getEmail());
             painRecordList.thenApply(painRecords -> {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override

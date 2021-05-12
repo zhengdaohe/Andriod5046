@@ -124,7 +124,13 @@ public class MapFragment extends Fragment {
                     )));
             try {
                 List<Address> addresses = geocoder.getFromLocation(Double.parseDouble(userLocation.split(",")[0]), Double.parseDouble(userLocation.split(",")[1]), 1);
-                binding.addressMsg.setText("You Current location: " + addresses.get(0).getAddressLine(0));
+                Address address = addresses.get(0);
+                if (address.getMaxAddressLineIndex() != -1){
+                    binding.addressMsg.setText("You Current location: " + address.getAddressLine(0));
+                }
+                else {
+                    binding.addressMsg.setText("You Current location: " + address.getLocality() + ", " + address.getAdminArea() + ", " + address.getCountryName());
+                }
                 CameraPosition position = new CameraPosition.Builder()
                         .target(new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude()))
                         .zoom(13)

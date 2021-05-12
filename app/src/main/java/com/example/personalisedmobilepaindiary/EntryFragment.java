@@ -104,7 +104,7 @@ public class EntryFragment extends Fragment {
         saveNotification = "";
         initializeAction(moodList, spinnerArrayAdapter, moodArrayAdapter);
         SharedPreferences alarmParam = requireActivity().getSharedPreferences("ALARM_PARAM", Context.MODE_PRIVATE);
-        binding.alarmDate.setHint(" Configure Alarm Time (Current time: " +  alarmParam.getInt("hour",-1) + ":" + alarmParam.getInt("minute",-1)+ ")(optional)" );
+        binding.alarmDate.setHint("Daily Recording Time (Current time: " +  alarmParam.getInt("hour",-1) + ":" + alarmParam.getInt("minute",-1)+ ")(optional)" );
         binding.configButton.setOnClickListener(v -> {
             if (!binding.alarmDateInput.getText().toString().equals("")){
                 Intent intent = new Intent(requireActivity(),MainActivity.class);
@@ -123,10 +123,10 @@ public class EntryFragment extends Fragment {
                 if (alarmParam.getInt("hour", -1) > Calendar.getInstance().get(Calendar.HOUR_OF_DAY) ||
                         (alarmParam.getInt("minute", -1) > Calendar.getInstance().get(Calendar.MINUTE) &&
                                 alarmParam.getInt("hour", -1) == Calendar.getInstance().get(Calendar.HOUR_OF_DAY))){
-                    alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+                    alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() - 120000, pendingIntent);
                 }
                 else {
-                    alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() + 86400000, pendingIntent);
+                    alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() - 120000 + 86400000, pendingIntent);
                 }
             }
 
@@ -153,7 +153,7 @@ public class EntryFragment extends Fragment {
         Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+10:00"));
         String date = "" + calendar.get(Calendar.DAY_OF_MONTH) + "/" + (calendar.get(Calendar.MONTH) + 1) +
                 "/" + calendar.get(Calendar.YEAR);
-        CompletableFuture<PainRecord> painRecord = datebaseViewModel.findRecordByDate(date);
+        CompletableFuture<PainRecord> painRecord = datebaseViewModel.findRecordByDate(date, FirebaseAuth.getInstance().getCurrentUser().getEmail());
         painRecord.thenApply(p -> {
                     if (true){
                         binding.editButton.post(() -> {
@@ -167,7 +167,7 @@ public class EntryFragment extends Fragment {
                                     binding.painLocationSpinner.getSelectedItem().toString(),
                                     moodList.get(binding.moodSpinner.getSelectedItemPosition()).toString().substring(1),
                                     Integer.parseInt(binding.stepTakenInput.getText().toString()),
-                                    "5/5/2021", FirebaseAuth.getInstance().getCurrentUser().getEmail(),
+                                    date, FirebaseAuth.getInstance().getCurrentUser().getEmail(),
                                     new PainRecord.Weather(18,
                                             getActivity().getSharedPreferences("WEATHER_PREFERENCE",
                                                     Context.MODE_PRIVATE).getInt("humidity", -1),

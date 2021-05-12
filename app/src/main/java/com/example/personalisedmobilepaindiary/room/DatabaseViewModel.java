@@ -25,8 +25,12 @@ public class DatabaseViewModel extends AndroidViewModel{
         repository.insert(painRecord);
     }
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public CompletableFuture<List<PainRecord>> getAllBylist() {
-        return repository.getAllByList();
+    public CompletableFuture<List<PainRecord>> getAllBylistAndUser(String email) {
+        return repository.getAllByListAndUser(email);
+    }
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public CompletableFuture<List<PainRecord>> getDailyPushRecord(String date) {
+        return repository.getDailyPushData(date);
     }
     public void update(PainRecord painRecord) {
         repository.update(painRecord);
@@ -34,15 +38,16 @@ public class DatabaseViewModel extends AndroidViewModel{
     public void delete(PainRecord painRecord) {
         repository.delete(painRecord);
     }
-    public void deleteAllRecords() {
-        repository.deleteAllRecords();
+    public void deleteAllRecords(String email) {
+        repository.deleteAllRecords(email);
     }
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public CompletableFuture<PainRecord> findRecordByDate(String date) {
-        return repository.findByDate(date);
+    public CompletableFuture<PainRecord> findRecordByDate(String date, String email) {
+        return repository.findByDate(date, email);
     }
+
     @RequiresApi(api = Build.VERSION_CODES.N)
-    public CompletableFuture<List<LocationFrequencyModel>> getLocationFrequency(){
-        return repository.getLocationFrequency();
+    public CompletableFuture<List<LocationFrequencyModel>> getLocationFrequency(String email){
+        return repository.getLocationFrequency(email);
     }
 }

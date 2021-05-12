@@ -6,17 +6,17 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.example.personalisedmobilepaindiary.HomeFragment"
-        android:label="HomeFragment" />
+        android:label="Home" />
     <fragment
         android:id="@+id/entryFragment"
         android:name="com.example.personalisedmobilepaindiary.EntryFragment"
-        android:label="EntryFragment" />
+        android:label="Daily Record Entry" />
     <fragment
         android:id="@+id/reportFragment"
         android:name="com.example.personalisedmobilepaindiary.ReportFragment"
-        android:label="ReportFragment" />
+        android:label="Report" />
     <fragment
         android:id="@+id/recordFragment"
         android:name="com.example.personalisedmobilepaindiary.RecordFragment"
-        android:label="RecordFragment" />
+        android:label="Pain Record" />
 </navigation>

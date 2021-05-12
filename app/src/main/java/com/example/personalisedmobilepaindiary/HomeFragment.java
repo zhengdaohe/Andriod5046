@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,7 +49,10 @@ public class HomeFragment extends Fragment {
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(requireActivity(), location -> {
                     if (location != null) {
-//                        model.setLocation(String.valueOf(location.getLatitude()) + "," + String.valueOf(location.getLongitude()));
+                        model.setLocation(location.getLatitude() + "," + location.getLongitude());
+                    }
+                    else {
+                        Log.e("a", "unable to get location, using default location");
                         model.setLocation("-37.9,145.126");
                     }
                 });
@@ -69,7 +74,12 @@ public class HomeFragment extends Fragment {
                                       String addressValue = "";
                                       if (addresses.size() > 0) {
                                           Address address = addresses.get(0);
-                                          binding.location.setText("location: " + addresses.get(0).getAddressLine(0));
+                                          if (address.getMaxAddressLineIndex() != -1){
+                                              binding.location.setText("location: " + address.getAddressLine(0));
+                                          }
+                                          else {
+                                              binding.location.setText("location: " + address.getLocality() + ", " + address.getAdminArea() + ", " + address.getCountryName());
+                                          }
                                           for (int i = 0; i < address.getMaxAddressLineIndex(); i++){
                                               if (i < 2)
                                                   addressValue = addressValue + address.getAddressLine(i) + ", ";

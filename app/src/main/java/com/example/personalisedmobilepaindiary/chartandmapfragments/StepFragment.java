@@ -20,6 +20,7 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -36,39 +37,37 @@ public class StepFragment extends Fragment {
         View view = binding.getRoot();
         DatabaseViewModel datebaseViewModel =
                 ViewModelProvider.AndroidViewModelFactory.getInstance(getActivity().getApplication()).create(DatabaseViewModel.class);
-        datebaseViewModel.getAllRecords().observe(getViewLifecycleOwner(), v -> {
-            Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+10:00"));
-            String date = "" + calendar.get(Calendar.DAY_OF_MONTH) + "/" + (calendar.get(Calendar.MONTH) + 1) +
-                    "/" + calendar.get(Calendar.YEAR);
-            CompletableFuture<PainRecord> painRecordCompletableFuture = datebaseViewModel.findRecordByDate(date);
-            painRecordCompletableFuture.thenApply(f -> {
-                List<PieEntry> entries = new ArrayList<>();
-                int stepGoal = getActivity().getSharedPreferences("STEP_GOAL_PREFERENCE",
-                        Context.MODE_PRIVATE).getInt("goal", -1);
-                entries.add(new PieEntry(f.stepTaken, "steps taken today"));
-                int remainingSteps = stepGoal - f.stepTaken;
-                if(remainingSteps < 0){
-                    remainingSteps = 0;
-                }
-                entries.add(new PieEntry(remainingSteps, "remaining steps"));
-                PieDataSet set = new PieDataSet(entries, "Steps taken pie chart");
-                ArrayList<Integer> colors = new ArrayList<Integer>();
-                for (int c : ColorTemplate.VORDIPLOM_COLORS)
-                    colors.add(c);
-                set.setColors(colors);
-                PieData data = new PieData(set);
-                Description description = new Description();
-                description.setText("");
-                data.setValueTextSize(12f);
-                binding.stepPieChart.setData(data);
-                binding.stepPieChart.setEntryLabelColor(ColorTemplate.rgb("#000000"));
-                binding.stepPieChart.setDescription(description);
-                binding.stepPieChart.getLegend().setOrientation(Legend.LegendOrientation.VERTICAL);
-                binding.stepPieChart.getLegend().setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
-                binding.stepPieChart.getLegend().setTextSize(12f);
-                binding.stepPieChart.invalidate();
-                return null;
-            });
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+10:00"));
+        String date = "" + calendar.get(Calendar.DAY_OF_MONTH) + "/" + (calendar.get(Calendar.MONTH) + 1) +
+                "/" + calendar.get(Calendar.YEAR);
+        CompletableFuture<PainRecord> painRecordCompletableFuture = datebaseViewModel.findRecordByDate(date, FirebaseAuth.getInstance().getCurrentUser().getEmail());
+        painRecordCompletableFuture.thenApply(f -> {
+            List<PieEntry> entries = new ArrayList<>();
+            int stepGoal = getActivity().getSharedPreferences("STEP_GOAL_PREFERENCE",
+                    Context.MODE_PRIVATE).getInt("goal", -1);
+            entries.add(new PieEntry(f.stepTaken, "steps taken today"));
+            int remainingSteps = stepGoal - f.stepTaken;
+            if(remainingSteps < 0){
+                remainingSteps = 0;
+            }
+            entries.add(new PieEntry(remainingSteps, "remaining steps"));
+            PieDataSet set = new PieDataSet(entries, "Steps taken pie chart");
+            ArrayList<Integer> colors = new ArrayList<Integer>();
+            for (int c : ColorTemplate.VORDIPLOM_COLORS)
+                colors.add(c);
+            set.setColors(colors);
+            PieData data = new PieData(set);
+            Description description = new Description();
+            description.setText("");
+            data.setValueTextSize(12f);
+            binding.stepPieChart.setData(data);
+            binding.stepPieChart.setEntryLabelColor(ColorTemplate.rgb("#000000"));
+            binding.stepPieChart.setDescription(description);
+            binding.stepPieChart.getLegend().setOrientation(Legend.LegendOrientation.VERTICAL);
+            binding.stepPieChart.getLegend().setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
+            binding.stepPieChart.getLegend().setTextSize(12f);
+            binding.stepPieChart.invalidate();
+            return null;
 
         });
         return view;
