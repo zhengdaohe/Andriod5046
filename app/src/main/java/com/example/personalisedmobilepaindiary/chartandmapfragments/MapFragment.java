@@ -41,7 +41,8 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconIgnorePlacement;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
 
-public class MapFragment extends Fragment {
+public class MapFragment extends Fragment
+{
     private MapFragmentBinding binding;
     private MapView map;
     private String userLocation;
@@ -49,136 +50,186 @@ public class MapFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
+    {
         Mapbox.getInstance(requireContext(), getString(R.string.mapbox_token));
         binding = MapFragmentBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
         LocationViewModel model = new
                 ViewModelProvider(requireActivity()).get(LocationViewModel.class);
-        model.getLocation().observe(getViewLifecycleOwner(), l -> {
-            if (isAdded()){
+        // Retrieve user location
+        model.getLocation().observe(getViewLifecycleOwner(), l ->
+        {
+            if (isAdded())
+            {
                 userLocation = l;
             }
         });
+        // Initialize map view.
         map = binding.map;
         binding.map.onCreate(savedInstanceState);
-        geocoder = new Geocoder(requireActivity(),new Locale.Builder().setLanguage("en").setRegion("AU").build());
+        geocoder = new Geocoder(requireActivity(), new Locale.Builder().setLanguage("en").setRegion("AU").build());
+        // Show user's current location in the map.
         showCurrentLocation();
-        binding.getRoot().setOnClickListener(v -> {
-            ((MainActivity)requireActivity()).clearSoftKeyboard();
+        // Cleat soft input when user click none-input space.
+        binding.getRoot().setOnClickListener(v ->
+        {
+            ((MainActivity) requireActivity()).clearSoftKeyboard();
         });
-        binding.showMap.setOnClickListener(v -> {
-            ((InputMethodManager) requireActivity().getSystemService(INPUT_METHOD_SERVICE))
-                    .hideSoftInputFromWindow(requireActivity().getCurrentFocus()
-                                    .getWindowToken(),
-                            InputMethodManager.HIDE_NOT_ALWAYS);
 
-            try {
-                if (!binding.addressInput.getText().toString().equals("")){
+        binding.showMap.setOnClickListener(v ->
+        {
+            // Clear soft input keyboard when search button clicked.
+            ((MainActivity) requireActivity()).clearSoftKeyboard();
+            try
+            {
+                // If there is user input for address, show the searched result in the map.
+                if (!binding.addressInput.getText().toString().equals(""))
+                {
                     List<Address> addresses = geocoder.getFromLocationName(binding.addressInput.getText().toString(), 1);
-                    binding.addressMsg.setText("Search result: " + addresses.get(0).getAddressLine(0));
-                    binding.map.getMapAsync(mapboxMap -> mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
-                        List<Feature> symbolLayerIconFeatureList = new ArrayList<>();
-                        symbolLayerIconFeatureList.add(Feature.fromGeometry(Point.fromLngLat(addresses.get(0).getLongitude(), addresses.get(0).getLatitude())));
-                        CameraPosition position = new CameraPosition.Builder()
-                                .target(new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude()))
-                                .zoom(13)
-                                .build();
-                        mapboxMap.setCameraPosition(position);
-                        mapboxMap.setStyle(new Style.Builder().fromUri("mapbox://styles/lohse/ckgop3hd11jdz19ju80smxy0g").
-                                withImage("ICON", BitmapFactory.decodeResource(
-                                        requireActivity().getResources(), R.drawable.mapbox_marker_icon_default)).withSource(new GeoJsonSource("SOURCE",
-                                FeatureCollection.fromFeatures(symbolLayerIconFeatureList))).withLayer(new SymbolLayer("LAYER", "SOURCE")
-                                .withProperties(
-                                        iconImage("ICON"),
-                                        iconAllowOverlap(true),
-                                        iconIgnorePlacement(true)
-                                )));
-                    }));
-                }
-                else {
+                    if (addresses.size() != 0)
+                    {
+                        Address address = addresses.get(0);
+                        // Show searched location address
+                        if (address.getMaxAddressLineIndex() != -1)
+                        {
+                            binding.addressMsg.setText("Searched result: " + address.getAddressLine(0));
+                        } else
+                        {
+                            binding.addressMsg.setText("Searched result: " + address.getLocality() + ", " + address.getAdminArea() + ", " + address.getCountryName());
+                        }
+                        // Initial map module.
+                        binding.map.getMapAsync(mapboxMap -> mapboxMap.setStyle(Style.MAPBOX_STREETS, style ->
+                        {
+                            List<Feature> symbolLayerIconFeatureList = new ArrayList<>();
+                            // Add the searched location into the map
+                            symbolLayerIconFeatureList.add(Feature.fromGeometry(Point.fromLngLat(addresses.get(0).getLongitude(), addresses.get(0).getLatitude())));
+                            // Adjust camera position
+                            CameraPosition position = new CameraPosition.Builder()
+                                    .target(new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude()))
+                                    .zoom(13)
+                                    .build();
+                            mapboxMap.setCameraPosition(position);
+                            // Start showing map
+                            mapboxMap.setStyle(new Style.Builder().fromUri("mapbox://styles/lohse/ckgop3hd11jdz19ju80smxy0g").
+                                    withImage("ICON", BitmapFactory.decodeResource(
+                                            requireActivity().getResources(), R.drawable.mapbox_marker_icon_default)).withSource(new GeoJsonSource("SOURCE",
+                                    FeatureCollection.fromFeatures(symbolLayerIconFeatureList))).withLayer(new SymbolLayer("LAYER", "SOURCE")
+                                    .withProperties(
+                                            iconImage("ICON"),
+                                            iconAllowOverlap(true),
+                                            iconIgnorePlacement(true)
+                                    )));
+                        }));
+                    } else
+                    {
+                        binding.addressMsg.setText("Searched result: no such location");
+                    }
+
+                } else
+                {
                     showCurrentLocation();
                 }
 
-            }catch (IOException e) {
-                Log.d("sad","asv");
+            } catch (IOException e)
+            {
             }
         });
 
         return view;
     }
-    public void showCurrentLocation(){
 
-        binding.map.getMapAsync(mapboxMap -> mapboxMap.setStyle(Style.MAPBOX_STREETS, style -> {
-            List<Feature> symbolLayerIconFeatureList = new ArrayList<>();
-            symbolLayerIconFeatureList.add(Feature.fromGeometry(
-                    Point.fromLngLat(Double.parseDouble(userLocation.split(",")[1]), Double.parseDouble(userLocation.split(",")[0]))));
-            mapboxMap.setStyle(new Style.Builder().fromUri("mapbox://styles/lohse/ckgop3hd11jdz19ju80smxy0g").
-                    withImage("ICON", BitmapFactory.decodeResource(
-                            requireActivity().getResources(), R.drawable.mapbox_marker_icon_default)).withSource(new GeoJsonSource("SOURCE",
-                    FeatureCollection.fromFeatures(symbolLayerIconFeatureList))).withLayer(new SymbolLayer("LAYER", "SOURCE")
-                    .withProperties(
-                            iconImage("ICON"),
-                            iconAllowOverlap(true),
-                            iconIgnorePlacement(true)
-                    )));
-            try {
+    /*
+     * Method to show user's current location in the map
+     */
+    public void showCurrentLocation()
+    {
+        // Initial map module.
+        binding.map.getMapAsync(mapboxMap -> mapboxMap.setStyle(Style.MAPBOX_STREETS, style ->
+        {
+            try
+            {
+                List<Feature> symbolLayerIconFeatureList = new ArrayList<>();
+                // Add the current location into the map
+                symbolLayerIconFeatureList.add(Feature.fromGeometry(
+                        Point.fromLngLat(Double.parseDouble(userLocation.split(",")[1]), Double.parseDouble(userLocation.split(",")[0]))));
+                mapboxMap.setStyle(new Style.Builder().fromUri("mapbox://styles/lohse/ckgop3hd11jdz19ju80smxy0g").
+                        withImage("ICON", BitmapFactory.decodeResource(
+                                requireActivity().getResources(), R.drawable.mapbox_marker_icon_default)).withSource(new GeoJsonSource("SOURCE",
+                        FeatureCollection.fromFeatures(symbolLayerIconFeatureList))).withLayer(new SymbolLayer("LAYER", "SOURCE")
+                        .withProperties(
+                                iconImage("ICON"),
+                                iconAllowOverlap(true),
+                                iconIgnorePlacement(true)
+                        )));
+                // Show current location address
                 List<Address> addresses = geocoder.getFromLocation(Double.parseDouble(userLocation.split(",")[0]), Double.parseDouble(userLocation.split(",")[1]), 1);
                 Address address = addresses.get(0);
-                if (address.getMaxAddressLineIndex() != -1){
+                if (address.getMaxAddressLineIndex() != -1)
+                {
                     binding.addressMsg.setText("You Current location: " + address.getAddressLine(0));
-                }
-                else {
+                } else
+                {
                     binding.addressMsg.setText("You Current location: " + address.getLocality() + ", " + address.getAdminArea() + ", " + address.getCountryName());
                 }
+                // Adjust camera position
                 CameraPosition position = new CameraPosition.Builder()
                         .target(new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude()))
                         .zoom(13)
                         .build();
                 mapboxMap.setCameraPosition(position);
-            } catch (IOException e) {
+            } catch (IOException e)
+            {
                 e.printStackTrace();
             }
         }));
     }
+
     @Override
-    public void onStart() {
+    public void onStart()
+    {
         super.onStart();
         map.onStart();
     }
 
     @Override
-    public void onResume() {
+    public void onResume()
+    {
         super.onResume();
         map.onResume();
     }
 
     @Override
-    public void onPause() {
+    public void onPause()
+    {
         super.onPause();
         map.onPause();
     }
 
     @Override
-    public void onStop() {
+    public void onStop()
+    {
         super.onStop();
         map.onStop();
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(Bundle outState)
+    {
         super.onSaveInstanceState(outState);
         map.onSaveInstanceState(outState);
     }
 
     @Override
-    public void onLowMemory() {
+    public void onLowMemory()
+    {
         super.onLowMemory();
         map.onLowMemory();
     }
 
     @Override
-    public void onDestroyView() {
+    public void onDestroyView()
+    {
         super.onDestroyView();
         map.onDestroy();
     }

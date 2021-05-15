@@ -21,25 +21,34 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class ForgotPasswordFragment extends Fragment {
+public class ForgotPasswordFragment extends Fragment
+{
     private ForgotPasswordFragmentBinding binding;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+                             Bundle savedInstanceState)
+    {
         binding = ForgotPasswordFragmentBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        binding.resetButton.setOnClickListener(v -> {
-            if (binding.email.getText().toString().equals("")){
+        // When a user click reset, send an email for resetting, and if input box is empty, show an error message.
+        binding.resetButton.setOnClickListener(v ->
+        {
+            if (binding.email.getText().toString().equals(""))
+            {
                 binding.errorMessage.setTextSize(14);
                 binding.errorMessage.setText("ERROR: You must enter an email!!");
-            }
-            else {
+            } else
+            {
                 FirebaseAuth auth = FirebaseAuth.getInstance();
                 auth.sendPasswordResetEmail(binding.email.getText().toString())
-                        .addOnCompleteListener(task -> {
-                            if (task.isSuccessful()) {
-                                Toast toast = Toast.makeText(requireActivity(),"reset email has been sent", Toast.LENGTH_LONG);
+                        .addOnCompleteListener(task ->
+                        {
+                            if (task.isSuccessful())
+                            {
+                                // After sending email, return to the sign in page.
+                                Toast toast = Toast.makeText(requireActivity(), "reset email has been sent", Toast.LENGTH_LONG);
                                 toast.show();
                                 FragmentTransaction fragmentTransaction =
                                         fragmentManager.beginTransaction();
@@ -47,13 +56,17 @@ public class ForgotPasswordFragment extends Fragment {
                                         new SigninFragment());
                                 fragmentTransaction.commit();
                             }
-                        }).addOnFailureListener(task -> {
-                    binding.errorMessage.setTextSize(14);
-                    binding.errorMessage.setText("ERROR: Reset failed, email does not exist or network issue!");
-                });
+                        })
+                        .addOnFailureListener(task ->
+                        {
+                            binding.errorMessage.setTextSize(14);
+                            binding.errorMessage.setText("ERROR: Reset failed, email does not exist or network issue!");
+                        });
             }
         });
-        binding.signinButton.setOnClickListener(v -> {
+        // Go back to sign in page if the user click sign in button.
+        binding.signinButton.setOnClickListener(v ->
+        {
             FragmentTransaction fragmentTransaction =
                     fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.fragment_container_view,
@@ -62,8 +75,10 @@ public class ForgotPasswordFragment extends Fragment {
         });
         return view;
     }
+
     @Override
-    public void onDestroyView() {
+    public void onDestroyView()
+    {
         super.onDestroyView();
         binding = null;
     }

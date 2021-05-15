@@ -13,37 +13,46 @@ import com.example.personalisedmobilepaindiary.chartandmapfragments.PainWeatherF
 import com.example.personalisedmobilepaindiary.chartandmapfragments.StepFragment;
 import com.example.personalisedmobilepaindiary.databinding.ReportFragmentBinding;
 
-public class ReportFragment extends Fragment {
+public class ReportFragment extends Fragment
+{
     private ReportFragmentBinding binding;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+                             Bundle savedInstanceState)
+    {
         binding = ReportFragmentBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
+        // Initialize with the first chart.
         getChildFragmentManager().beginTransaction().replace(R.id.chart_container_view, new PainLocationFragment()).commit();
         binding.painLocationChart.setEnabled(false);
-        binding.stepChart.setOnClickListener(v -> {
+        // For each button navigate the fragment by button.
+        binding.stepChart.setOnClickListener(v ->
+        {
             getChildFragmentManager().beginTransaction().replace(R.id.chart_container_view, new StepFragment()).commit();
             binding.painLocationChart.setEnabled(true);
             binding.painWeatherLocationChart.setEnabled(true);
             binding.stepChart.setEnabled(false);
             binding.map.setEnabled(true);
         });
-        binding.painLocationChart.setOnClickListener(v -> {
+        binding.painLocationChart.setOnClickListener(v ->
+        {
             getChildFragmentManager().beginTransaction().replace(R.id.chart_container_view, new PainLocationFragment()).commit();
             binding.painLocationChart.setEnabled(false);
             binding.painWeatherLocationChart.setEnabled(true);
             binding.stepChart.setEnabled(true);
             binding.map.setEnabled(true);
         });
-        binding.painWeatherLocationChart.setOnClickListener(v -> {
+        binding.painWeatherLocationChart.setOnClickListener(v ->
+        {
             getChildFragmentManager().beginTransaction().replace(R.id.chart_container_view, new PainWeatherFragment()).commit();
             binding.painLocationChart.setEnabled(true);
             binding.painWeatherLocationChart.setEnabled(false);
             binding.stepChart.setEnabled(true);
             binding.map.setEnabled(true);
         });
-        binding.map.setOnClickListener(v -> {
+        binding.map.setOnClickListener(v ->
+        {
             getChildFragmentManager().beginTransaction().replace(R.id.chart_container_view, new MapFragment()).commit();
             binding.painLocationChart.setEnabled(true);
             binding.map.setEnabled(false);
@@ -54,8 +63,10 @@ public class ReportFragment extends Fragment {
         return view;
 
     }
+
     @Override
-    public void onDestroyView() {
+    public void onDestroyView()
+    {
         super.onDestroyView();
         binding = null;
     }

@@ -25,27 +25,36 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class MyWorker extends Worker {
-    public MyWorker(@NonNull Context context, @NonNull WorkerParameters params) {
+/*
+ * Worker class to perform database pushing operation
+ */
+public class MyWorker extends Worker
+{
+    public MyWorker(@NonNull Context context, @NonNull WorkerParameters params)
+    {
         super(context, params);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
-    public Result doWork() {
-
+    public Result doWork()
+    {
+        // Get data model from current activity
         DatabaseViewModel datebaseViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(MainActivity.currentInstance.getApplication()).create(DatabaseViewModel.class);
         Calendar calendar = Calendar.getInstance();
+        // Get date of today.
         String date = "" + calendar.get(Calendar.DAY_OF_MONTH) + "/" + (calendar.get(Calendar.MONTH) + 1) +
                 "/" + calendar.get(Calendar.YEAR);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("DailyPainRecord");
-        datebaseViewModel.getDailyPushRecord(date).thenApply(v -> {
+        datebaseViewModel.getDailyPushRecord(date).thenApply(v ->
+        {
+            // Push today's new record into Firebase database.
             String date1 = "" + calendar.get(Calendar.DAY_OF_MONTH) + "-" + (calendar.get(Calendar.MONTH) + 1) +
                     "-" + calendar.get(Calendar.YEAR);
             myRef.child(date1).setValue(v);
 
-            Log.e("a", "pushed");
+            Log.e("database push", "data has been pushed");
 
             return null;
         });

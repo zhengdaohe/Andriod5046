@@ -9,22 +9,12 @@ import androidx.room.Embedded;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+/*
+ * Entity class mapping data into database
+ */
 @Entity(tableName = "PainRecord")
-public class PainRecord {
-    public static class Weather{
-        @ColumnInfo(name = "temperature")
-        public double temperature;
-        @ColumnInfo(name = "humidity")
-        public double humidity;
-        @ColumnInfo(name = "pressure")
-        public double pressure;
-
-        public Weather(double temperature, double humidity, double pressure) {
-            this.temperature = temperature;
-            this.humidity = humidity;
-            this.pressure = pressure;
-        }
-    }
+public class PainRecord
+{
     @PrimaryKey(autoGenerate = true)
     public int rid;
     @ColumnInfo(name = "pain_intensity_level")
@@ -45,10 +35,10 @@ public class PainRecord {
     public String userEmail;
     @Embedded
     public Weather weather;
-
     public PainRecord(int painIntensityLevel, @NonNull String painLocation,
                       @NonNull String mood, int stepTaken, @NonNull String date,
-                      @NonNull String userEmail, Weather weather) {
+                      @NonNull String userEmail, Weather weather)
+    {
         this.painIntensityLevel = painIntensityLevel;
         this.painLocation = painLocation;
         this.mood = mood;
@@ -56,6 +46,23 @@ public class PainRecord {
         this.date = date;
         this.userEmail = userEmail;
         this.weather = weather;
+    }
+
+    public static class Weather
+    {
+        @ColumnInfo(name = "temperature")
+        public double temperature;
+        @ColumnInfo(name = "humidity")
+        public double humidity;
+        @ColumnInfo(name = "pressure")
+        public double pressure;
+
+        public Weather(double temperature, double humidity, double pressure)
+        {
+            this.temperature = temperature;
+            this.humidity = humidity;
+            this.pressure = pressure;
+        }
     }
 }
 

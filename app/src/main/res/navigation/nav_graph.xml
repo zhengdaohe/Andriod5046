@@ -10,13 +10,13 @@
     <fragment
         android:id="@+id/entryFragment"
         android:name="com.example.personalisedmobilepaindiary.EntryFragment"
-        android:label="Daily Record Entry" />
+        android:label="Pain Data Entry" />
     <fragment
         android:id="@+id/reportFragment"
         android:name="com.example.personalisedmobilepaindiary.ReportFragment"
-        android:label="Report" />
+        android:label="Reports And Maps" />
     <fragment
         android:id="@+id/recordFragment"
         android:name="com.example.personalisedmobilepaindiary.RecordFragment"
-        android:label="Pain Record" />
+        android:label="Daily Record" />
 </navigation>

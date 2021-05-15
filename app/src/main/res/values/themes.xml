@@ -19,8 +19,8 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-    <style name="Theme.NavigationJava.AppBarOverlay"
+    <style name="Theme.PersonalisedMobilePainDiary.AppBarOverlay"
         parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-    <style name="Theme.NavigationJava.PopupOverlay"
+    <style name="Theme.PersonalisedMobilePainDiary.PopupOverlay"
         parent="ThemeOverlay.MaterialComponents.Light" />
 </resources>

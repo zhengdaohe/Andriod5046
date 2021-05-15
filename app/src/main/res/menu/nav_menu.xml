@@ -4,14 +4,18 @@
     tools:showIn="navigation_view">
     <item
         android:id="@+id/homeFragment"
+        android:icon="@drawable/ic_baseline_home_24"
         android:title="Home" />
     <item
         android:id="@+id/entryFragment"
+        android:icon="@drawable/ic_baseline_edit_24"
         android:title="Pain Data Entry" />
     <item
         android:id="@+id/recordFragment"
+        android:icon="@drawable/ic_baseline_storage_24"
         android:title="Daily Record" />
     <item
         android:id="@+id/reportFragment"
+        android:icon="@drawable/ic_baseline_data_exploration_24"
         android:title="Reports and Maps" />
 </menu>
